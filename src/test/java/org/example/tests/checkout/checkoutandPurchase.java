@@ -6,6 +6,8 @@ import org.openqa.selenium.TakesScreenshot;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
 import pages.LoginPage;
+import utilities.PropertiesManager;
+import utilities.ScreenshotsManager;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -17,17 +19,23 @@ public class checkoutandPurchase {
     String status;
     ThreadLocal<Driver> driverThreadLocal;
 
-    @BeforeSuite
+    @BeforeSuite (alwaysRun = true)
     public void beforeSuite() {
         System.out.println("Suite start");
+        PropertiesManager.initializeProperties();
     }
 
-    @BeforeClass(alwaysRun = true)
-    @Parameters ({"browserName"})
-    public void Setup(String browser) {
-        driverThreadLocal = new ThreadLocal<>();
-        driverThreadLocal.set(new Driver(browser));
-        driverThreadLocal.get().getDriver().navigate().to("https://www.saucedemo.com");
+//    @BeforeClass(alwaysRun = true)
+//    @Parameters ({"browserName"})
+//    public void Setup(String browser) {
+//        driverThreadLocal = new ThreadLocal<>();
+//        driverThreadLocal.set(new Driver(browser));
+//        driverThreadLocal.get().getDriver().navigate().to("https://www.saucedemo.com");
+//    }
+@BeforeClass(alwaysRun = true)
+public void Setup() {
+    driverThreadLocal = new ThreadLocal<>();
+    driverThreadLocal.set(new Driver());
     }
 
     @BeforeMethod
@@ -59,25 +67,12 @@ public class checkoutandPurchase {
     }
 
     @AfterMethod(alwaysRun = true)
-    public void Proof(ITestResult testResult) throws Exception {
-
-        File screenshot = ((TakesScreenshot) driverThreadLocal.get().getDriver()).getScreenshotAs(OutputType.FILE);
-
-        Path destination = Path.of("Screenshots", testResult.getName() + "_" + "Failed" + "_" + System.currentTimeMillis() + ".png");
-
-        Files.createDirectories(destination.getParent());
-
-        Files.copy(screenshot.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
-
-        System.out.println("Screenshot: " + destination.toAbsolutePath());
-
-        if (testResult.getStatus() == ITestResult.SUCCESS) {
-            status = "passed";
-            System.out.println("the test status is: " + status);
-
-        } else if (testResult.getStatus() == ITestResult.FAILURE) {
-            status = "failed";
-            System.out.println("the test status is: " + status);
+    public void Proof(ITestResult result) throws Exception {
+        if(result.getStatus() == ITestResult.FAILURE) {
+            // Take screenshot on test failure
+            System.out.println("Test failed: " + result.getName());
+            // Implement your screenshot logic here
+            ScreenshotsManager.TakeScreenShot(driverThreadLocal.get().getDriver(), result.getTestName());
         }
     }
 

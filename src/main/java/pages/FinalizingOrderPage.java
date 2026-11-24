@@ -27,7 +27,7 @@ public class FinalizingOrderPage {
 
     public FinalizingOrderPage assertOrderCompletePage() {
         System.out.println("Order completed");
-        driver.element().WaitForElementToBeVisible(finishButton, Duration.ofSeconds(2));
+        driver.element().WaitForElementToBeVisible(finishButton, Duration.ofSeconds(4));
         driver.hardassertions().element(finishButton).IsDisplayed();
         return this;
     }

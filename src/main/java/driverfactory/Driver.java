@@ -7,6 +7,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import utilities.PropertiesManager;
 
 import java.io.File;
 
@@ -26,7 +27,11 @@ public class Driver {
     }
 
     public Driver() {
+        if (frameworkConfig == null) {
+            PropertiesManager.initializeProperties();
+        }
         String browserType = frameworkConfig.getProperty("BrowserType");
+
         driver = new ThreadLocal<>();
         driver.set(getDriverFactory(browserType).StartDriver());
         System.out.println("Starting the execution via " + browserType + " driver");
